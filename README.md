@@ -1,5 +1,5 @@
 # FIpy
-FIpy is a package for processing and merging 'mzML' files workflow for untargeted mass spectrometry analysis.
+FIpy is a package for processing and merging `mzML` files workflow for untargeted mass spectrometry analysis.
 
 # What does FIpy do to my data?
 
