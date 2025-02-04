@@ -105,9 +105,10 @@ def read_mzml_files(list_mzml_files):
     """
     dict_all_rawdata = {}
     for mzml_file in list_mzml_files:
-        filename = mzml_file.split('/')[-1]
-        dict_all_rawdata[filename] = extract_apex_surrounding_scans(mzml_file)
-    
+        if 'mzML' in mzml_file:
+            filename = mzml_file.split('/')[-1]
+            dict_all_rawdata[filename] = extract_apex_surrounding_scans(mzml_file)
+        
     return dict_all_rawdata
 
 
