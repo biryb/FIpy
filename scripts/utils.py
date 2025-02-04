@@ -204,7 +204,7 @@ def merge_files(df, tolerance=0.001):
 
     df_agg = df.groupby(groups).sum()
     df_agg.index = df_agg.index.map(dict_newind2mz)
-
+    print(df_agg.head(10))
     return df_agg
 
 
