@@ -33,7 +33,7 @@ pip install git+https://github.com/biryb/FIpy.git
 ## Install from a Local Directory
 
 If you'd like to install from your local repository, download the repository, navigate to the folder containing the `setup.py` file and run:
-
+```bash
 pip install .
 
 # Usage
