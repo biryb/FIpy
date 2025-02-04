@@ -1,6 +1,16 @@
 # FIpy
 Flow injection analysis processing workflow for untargeted metabolomics.
 
+# What does FIpy do to my data?
+
+1. It reads in the files and determines the highest intensity scans<br>
+2. Within each file, it flattens the time dimension by merging m/z values from consecutive scans and summing up corresponding intensities<br>
+3. It merges all the data into one large dataframe
+4. It merges m/z values in the dataframe based on similarity (rows with m/z 143.1221 and m/z 143.1220 would be combined)
+5. It filters out ions that were present in less than 50% of the files
+   
+<img width="3760" alt="image" src="https://github.com/user-attachments/assets/a86db38a-a367-4ab4-a640-aa22e4a2d1fc" />
+
 # Data requirements
 This script uses flow injection-MS1 data. It's been tested with 1 minute injections as in Fuhrer et al 2011 (https://pubs-acs-org.ezp-prod1.hul.harvard.edu/doi/10.1021/ac201267k), but could theoretically use any flow injection data. While developed for TOF's, there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.
 It uses the few scans that have the most ions in them as inferred from the TIC profile:
