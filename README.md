@@ -29,6 +29,8 @@ You can install **FIpy** using `pip` either from GitHub or from a local director
 To install the package directly from GitHub, run the following command:
 ```bash
 pip install git+https://github.com/biryb/FIpy.git
+```
+
 ```markdown
 ## Install from a Local Directory
 
