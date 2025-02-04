@@ -42,10 +42,10 @@ Command-Line Interface (CLI)<br>
 The package provides command-line tools for processing your `mzML` files and analyzing them<br>
 
 ```bash
-fipy <dir_mzml> <dir_analysis>
+fipy <dir_mzml>
 ```
 
-FIpy outputs an Excel file in dir_analysis
+FIpy creates a subfolder called "fipy_output" in dir_mzml and saves results in that path as an Excel file.
 
 # Contact
 Reach out to birgittaryback@gmail.com with questions and comments
