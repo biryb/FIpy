@@ -195,7 +195,16 @@ def merge_files(df, tolerance=0.001):
         pd.DataFrame: Aggregated DataFrame with merged m/z values.
     """
     groups = (df.index.to_series().diff().abs() > tolerance).cumsum()
+    dict_newind2mz = {}
+    for value in groups.unique():
+        rows = groups[groups==value]
+        mz = rows.index
+        new_mz = np.mean(mz)
+        dict_newind2mz[value] = new_mz
+
     df_agg = df.groupby(groups).sum()
+    df_agg.index = df_agg.index.map(dict_newind2mz)
+
     return df_agg
 
 
