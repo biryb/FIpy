@@ -1,5 +1,5 @@
 # FIpy
-Flow injection analysis processing workflow for untargeted metabolomics.
+FIpy is a package for processing and merging 'mzML' files workflow for untargeted mass spectrometry analysis.
 
 # What does FIpy do to my data?
 
@@ -20,11 +20,27 @@ The input is a folder with .mzML files. Prior to running FIpy, convert your raw 
 
 <img width="500" alt="image" src="https://github.com/user-attachments/assets/c90588ae-3b81-454f-8f84-51a3dd1add27" />
 
-# Usage
-Download FIpy script and run it in your IDE.
+# Installation
 
-# Requirements
-python 3.10.9<br>
-pyteomics 4.6<br>
-pandas 1.5.3<br>
-numpy 1.23.5<br>
+You can install **FIpy** using `pip` either from GitHub or from a local directory.
+
+## Install from GitHub
+
+To install the package directly from GitHub, run the following command:
+
+pip install git+https://github.com/biryb/FIpy.git
+
+## Install from a Local Directory
+
+If you'd like to install from your local repository, download the repository, navigate to the folder containing the `setup.py` file and run:
+
+pip install .
+
+# Usage
+
+Command-Line Interface (CLI)<br>
+
+The package provides command-line tools for processing your `mzML` files and analyzing them<br>
+
+fipy <dir_mzml> <dir_analysis><br?>
+
