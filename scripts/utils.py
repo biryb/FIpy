@@ -54,8 +54,8 @@ def extract_apex_surrounding_scans(mzml_file):
         mzml_obj_2 = mzml.read(mzml_file)  # Re-opening to iterate again
         spectra = list(mzml_obj_2)
         
-        start = max(0, apex_scan - 3)
-        end = min(len(spectra), apex_scan + 3)
+        start = apex_scan
+        end = min(len(spectra), apex_scan + 6)
     
         data = []
         for i in range(start, end):
