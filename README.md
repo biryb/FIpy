@@ -12,8 +12,8 @@ FIpy is a package for processing and merging 'mzML' files workflow for untargete
 
 # Data requirements
 This script uses flow injection-MS1 data. It was developed for 1 minute injections as in Fuhrer et al 2011 (https://pubs-acs-org.ezp-prod1.hul.harvard.edu/doi/10.1021/ac201267k), but could theoretically use any flow injection data. While developed for TOF's, there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.
-It uses the few scans that have the most ions in them as inferred from the TIC profile:
 
+It estimates sample introduction time from the few scans around the apex of the injection peak:
 <img width="500" alt="image" src="https://github.com/user-attachments/assets/299fa61e-40c2-4a0c-a740-6efc9ac7e310" />
 
 The input is a folder with .mzML files. Prior to running FIpy, convert your raw files to .mzML with the following settings
