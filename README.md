@@ -1,5 +1,5 @@
 # FIpy
-Flow injection analysis processing workflow for untargeted metabolomics
+Flow injection analysis processing workflow for untargeted metabolomics.
 
 # Data requirements
 This script uses flow injection-MS1 data. It's been tested with 1 minute injections as in Fuhrer et al 2011 (), but could theoretically use any flow injection data. While developed for TOF's, there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.
