@@ -31,13 +31,12 @@ To install the package directly from GitHub, run the following command:
 pip install git+https://github.com/biryb/FIpy.git
 ```
 
-```markdown
 ## Install from a Local Directory
 
 If you'd like to install from your local repository, download the repository, navigate to the folder containing the `setup.py` file and run:
 ```bash
 pip install .
-```markdown
+```
 
 # Usage
 
@@ -47,7 +46,8 @@ The package provides command-line tools for processing your `mzML` files and ana
 
 ```bash
 fipy <dir_mzml> <dir_analysis><br?>
-```markdown
+```
+
 FIpy outputs an Excel file in dir_analysis
 
 # Contact
