@@ -1,0 +1,26 @@
+# Python bytecode files
+*.pyc
+*.pyo
+*.csv
+*.xlsx
+
+__pycache__/
+
+# macOS files
+.DS_Store
+
+# IDE/editor files (e.g., for VS Code, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Virtual environment files (optional, if using virtualenv)
+venv/
+env/
+
+# Distribution / packaging files
+*.egg-info/
+dist/
+build/
+
+# Jupyter notebook checkpoints (optional)
+.ipynb_checkpoints/
