@@ -52,7 +52,7 @@ def main():
     # Gap filling
     print('Gapfilling based on consensus m/z')
     start_time = time.time()
-    df_gapfilled = process_mzml_files_with_consensus_mzs(list_mzml_files,df_merged,tolerance=0.005)
+    df_gapfilled = map_mz_to_consensus(list_mzml_files,df_merged,tolerance=0.005)
     elapsed_time = time.time() - start_time
     print(f"Gapfilling took {elapsed_time/60:.4f} minutes to run.")
 
@@ -60,7 +60,6 @@ def main():
     df_filtered = filter_rare_ions(df_merged)
     
     output_dir = os.path.join(dir_analysis, "fipy_output")
-    
     # Create the folder if it doesn't exist
     try:  
         os.mkdir(output_dir)
@@ -68,12 +67,15 @@ def main():
     except OSError as error:  
         print("Folder exist, appending to existing folder")
         order_number = len(os.listdir(output_dir))+1
+    print(f"Saving filtered raw data to {output_dir}")
+    df_filtered.to_excel(os.path.join(output_dir, f"raw_output_{order_number}.xlsx"))
+
 
     df_annot = load_annotation_data()
     df_annotated_data = annotate(df_filtered,df_annot,polarity,tolerance=0.005)
-    df_annotated_data.to_excel(os.path.join(output_dir, f"raw_output_{order_number}.xlsx"))
+    df_annotated_data.to_excel(os.path.join(output_dir, f"raw_annotated_output_{order_number}.xlsx"))
     
-    print(f"Saving results in: {output_dir}")        
+    print(f"Saving annotated data in: {output_dir}")        
     elapsed_time = time.time() - init_start_time
     print(f"Finished and took {elapsed_time/60:.4f} minutes to run.")
 if __name__ == "__main__":
