@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 from pyteomics import mzml
 import time
+import requests
+import csv
 
 
 def infer_polarity(list_mzml_files):
@@ -336,13 +338,51 @@ def process_mzml_files_with_consensus_mzs(list_mzml_files, df_filtered, toleranc
             
     return df_gapfilled_data
 
-def load_annotation_data():
-    # Open the CSV file as a text file from the package's 'data' directory.
-    with pkg_resources.open_text('fipy.data', 'annotation.csv') as csv_file:
-        # Read the CSV file into a Pandas DataFrame
-        df = pd.read_csv(csv_file, encoding='latin1')
-    return df
 
+def map_mz_to_consensus(mzml_files, df_merged, tolerance=0.005):
+    """
+    Map m/z values from mzML files to consensus m/z values within a given tolerance.
+    Summing intensities for duplicate m/z mappings.
+    
+    Args:
+    - mzml_files (list): List of mzML file paths.
+    - consensus_mz (numpy array): Consensus m/z values.
+    - tolerance (float): Tolerance for matching m/z values.
+    
+    Returns:
+    - pd.DataFrame: DataFrame with filenames as columns, m/z indices as rows, and summed intensities as values.
+    """
+    # Initialize an empty DataFrame for storing results
+    consensus_mz = df_merged.index
+    result_df = pd.DataFrame(index=consensus_mz, columns=mzml_files)
+    # Loop through each mzML file
+    for file in mzml_files:
+        # Open the mzML file
+        reader = mzml.MzML(file)
+        
+        # Initialize a list to store summed intensities for this file
+        summed_intensities = np.zeros(len(consensus_mz))
+        
+        # Loop through each spectrum in the mzML file
+        for spectrum in reader:
+            mz = spectrum['m/z array']
+            intensity = spectrum['intensity array']
+            
+            # Map the m/z values to the consensus m/z values
+            for i, cons_mz in enumerate(consensus_mz):
+                # Find the m/z values within the tolerance range
+                matches = np.abs(mz - cons_mz) <= tolerance
+                summed_intensities[i] += np.sum(intensity[matches])
+        
+        # Store the summed intensities in the DataFrame
+        result_df[file] = summed_intensities
+
+    return result_df
+
+def load_annotation_file():
+    url="https://docs.google.com/spreadsheets/d/15TVDmFFBHW4FWc8VfIlevmTx62t36c7BE7d01kIaVcQ/export?format=csv"
+    df_annot = pd.read_csv(url)
+    return df_annot
 
 def annotate(df_data,df_annot,polarity,tolerance):
     df_annot['ion_ID'] = range(1,df_annot.shape[0]+1)
@@ -362,7 +402,4 @@ def annotate(df_data,df_annot,polarity,tolerance):
             annots = '|'.join(df_annot_mz.name)
             df_data.loc[mz,'annotation'] = annots
     return df_data
-<<<<<<< HEAD
             
-=======
->>>>>>> 6c8e9d29ca4d5dc57d006b94273c8818121db000
