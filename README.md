@@ -7,11 +7,15 @@ FIpy is a package for a processing and merging workflow for `mzML` files and can
 2. Within each file, it flattens the time dimension by merging m/z values from consecutive scans and summing up corresponding intensities<br>
 3. It merges all the data into one large dataframe<br>
 4. It merges m/z values in the dataframe based on similarity (rows with m/z 143.1221 and m/z 143.1220 would be combined)<br>
-5. It filters out ions that were present in less than 50% of the files
-6. It writes the resulting dataframe into .xlsx file
+5. It filters out ions that vary more than 20% between technical replicates
+6. It filters out ions that were present in less than 50% of the files
+7. It annotates the ions based on accurate mass
+8. It writes the resulting dataframe into .xlsx file
 
 # Data requirements
 FIpy uses flow injection-MS1 data. It was developed for 1 minute injections as in Fuhrer et al 2011 (https://pubs-acs-org.ezp-prod1.hul.harvard.edu/doi/10.1021/ac201267k), but could theoretically use any flow injection data. While developed for TOF's, there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.<br>
+
+If technical injection replicates are used (which is recommended), they should be named as uniquesampleidentifier__replicateID.mzML. FIpy uses this information to filter out ions that are very dissimilar between the technical replicates. It recognizes replicates from "__" specifically. <br>
 
 The input is a folder with .mzML files. Prior to running FIpy, convert your raw files to .mzML with the following settings
 
@@ -39,7 +43,7 @@ pip install .
 
 Command-Line Interface (CLI)<br>
 
-The package provides command-line tools for processing your `mzML` files and analyzing them<br>
+Open your terminal or command line and run:
 
 ```bash
 fipy <dir_mzml>
