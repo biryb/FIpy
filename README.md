@@ -15,7 +15,7 @@ FIpy is a package for a processing and merging workflow for `mzML` files and can
 # Data requirements
 FIpy uses flow injection-MS1 data. It was developed for 1 minute injections as in Fuhrer et al 2011 (https://pubs-acs-org.ezp-prod1.hul.harvard.edu/doi/10.1021/ac201267k), but could theoretically use any flow injection data. While developed for TOF's, there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.<br>
 
-If technical injection replicates are used (which is recommended), they should be named as uniquesampleidentifier__replicateID.mzML. FIpy uses this information to filter out ions that are very dissimilar between the technical replicates. <br>
+If technical injection replicates are used (which is recommended), they should be named as uniquesampleidentifier__replicateID.mzML. FIpy uses this information to filter out ions that are very dissimilar between the technical replicates. It recognizes replicates from "__" specifically. <br>
 
 The input is a folder with .mzML files. Prior to running FIpy, convert your raw files to .mzML with the following settings
 
