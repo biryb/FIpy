@@ -43,7 +43,7 @@ pip install .
 
 Command-Line Interface (CLI)<br>
 
-The package provides command-line tools for processing your `mzML` files and analyzing them<br>
+Open your terminal or command line and run:
 
 ```bash
 fipy <dir_mzml>
