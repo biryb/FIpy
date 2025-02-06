@@ -234,7 +234,7 @@ def merge_files(df, tolerance=0.001):
     return df_agg
 
 
-def filter_rare_ions(df_merged, threshold=0.5):
+def filter_rare_ions(df, threshold=0.5):
     """
     Remove ions that appear in fewer samples than a given threshold.
 
@@ -245,9 +245,11 @@ def filter_rare_ions(df_merged, threshold=0.5):
     Returns:
         pd.DataFrame: Filtered DataFrame with rare ions removed.
     """
-    df_cleaned = df_merged[df_merged.apply(lambda row: (row == 0).sum() / len(row) <= threshold, axis=1)]
+    df = df.replace(np.nan,0)
+    print(df.head())
+    df_filtered = df[df.apply(lambda row: (row <10).sum() / len(row) <= threshold, axis=1)]
     
-    return df_cleaned
+    return df_filtered
 
 
 def process_mzml_files_with_consensus_mzs(list_mzml_files, df_filtered, tolerance, apex_offset=6):
@@ -307,7 +309,8 @@ def process_mzml_files_with_consensus_mzs(list_mzml_files, df_filtered, toleranc
                     # Iterate through each target m/z in df_filtered.index
                     for target_mz in df_filtered.index:
                         # Find indices where the m/z values are within the specified tolerance of the target
-                        indices = np.where((mzs >= target_mz - tolerance) & (mzs <= target_mz + tolerance))[0].tolist()
+                        indices = np.where((mzs >= target_mz - tolerance) 
+                        & (mzs <= target_mz + tolerance))[0].tolist()
                         if indices:
                             # Sum intensities for these indices
                             intensity_sum = sum([intensities[idx] for idx in indices])
@@ -325,66 +328,57 @@ def process_mzml_files_with_consensus_mzs(list_mzml_files, df_filtered, toleranc
         return pd.DataFrame()
     
     print(f'Gapfilling')
-
-    # Use the first file's dictionary keys (target m/z values) as the index for the final DataFrame
+    # Create a MultiIndex for the DataFrame (index = target m/z, columns = file paths)
     first_key = next(iter(dict_all_rawdata))
     gapfill_index = dict_all_rawdata[first_key].keys()
     df_gapfilled_data = pd.DataFrame(index=gapfill_index, columns=dict_all_rawdata.keys())
-    
-    # Populate the DataFrame with the intensity data
-    for file_path, mz2int in dict_all_rawdata.items():
-        for target_mz, intensity in mz2int.items():
-            df_gapfilled_data.loc[target_mz, file_path] = intensity
-            
+
+    # Convert the dict into a list of tuples (target_mz, file_path, intensity)
+    data = [(target_mz, file_path, intensity)
+            for file_path, mz2int in dict_all_rawdata.items()
+            for target_mz, intensity in mz2int.items()]
+
+    # Create a DataFrame directly from the list of tuples
+    df_temp = pd.DataFrame(data, columns=['target_mz', 'file_path', 'intensity'])
+
+    # Pivot to reshape the DataFrame and assign values to the final df_gapfilled_data
+    df_gapfilled_data = df_temp.pivot(index='target_mz', columns='file_path', values='intensity')
+
+ 
     return df_gapfilled_data
 
+import pandas as pd
 
-def map_mz_to_consensus(mzml_files, df_merged, tolerance=0.005):
-    """
-    Map m/z values from mzML files to consensus m/z values within a given tolerance.
-    Summing intensities for duplicate m/z mappings.
+def filter_high_variation_ions(df, threshold=0.20):
+    # Find groups of replicates based on the column names
+    replicate_columns = {}
     
-    Args:
-    - mzml_files (list): List of mzML file paths.
-    - consensus_mz (numpy array): Consensus m/z values.
-    - tolerance (float): Tolerance for matching m/z values.
+    # Loop through columns to group replicate pairs
+    for col in df.columns:
+        sample_name = col.split('__')[0]  # Extract sample name (before the __)
+        if sample_name not in replicate_columns:
+            replicate_columns[sample_name] = []
+        replicate_columns[sample_name].append(col)
     
-    Returns:
-    - pd.DataFrame: DataFrame with filenames as columns, m/z indices as rows, and summed intensities as values.
-    """
-    # Initialize an empty DataFrame for storing results
-    consensus_mz = df_merged.index
-    result_df = pd.DataFrame(index=consensus_mz, columns=mzml_files)
-    # Loop through each mzML file
-    for file in mzml_files:
-        # Open the mzML file
-        mzml_obj = mzml.MzML(file)
-        apex = find_apex_scan(mzml_obj)
-        start=apex
-        end = min(len(spectra), apex_scan + 6)
-        reader = mzml.MzML(file)
-        
-        # Initialize a list to store summed intensities for this file
-        summed_intensities = np.zeros(len(consensus_mz))
+    # List of rows to drop (using a set to avoid duplicates)
+    rows_to_drop = set()
     
-        data = []
-
-        # Loop through each spectrum in the predetermined apex of the injection peak in the mzML file
-        for i in range(start, end):
-            spectrum = spectra[i]
-            mz = spectrum['m/z array']
-            intensity = spectrum['intensity array']
-            
-            # Map the m/z values to the consensus m/z values
-            for i, cons_mz in enumerate(consensus_mz):
-                # Find the m/z values within the tolerance range
-                matches = np.abs(mz - cons_mz) <= tolerance
-                summed_intensities[i] += np.sum(intensity[matches])
-        
-        # Store the summed intensities in the DataFrame
-        result_df[file] = summed_intensities
-
-    return result_df
+    # Check each sample's replicates
+    for sample_name, columns in replicate_columns.items():
+        if len(columns) > 1:  # Only process if there are multiple replicates
+            # Calculate the pairwise differences between all replicates for this sample
+            for i, col_a in enumerate(columns):
+                for col_b in columns[i+1:]:
+                    # Calculate the percentage difference between col_a and col_b
+                    diff_percentage = (df[col_a] - df[col_b]).abs() / df[[col_a, col_b]].mean(axis=1)
+                    
+                    # Identify m/z where the difference exceeds the threshold and add to rows_to_drop
+                    rows_to_drop.update(diff_percentage[diff_percentage > threshold].index)
+    print(f"dropping rows{rows_to_drop}")
+    # Drop rows that have a high difference
+    df_filtered = df.drop(index=rows_to_drop)
+    
+    return df_filtered
 
 def load_annotation_file():
     url="https://docs.google.com/spreadsheets/d/15TVDmFFBHW4FWc8VfIlevmTx62t36c7BE7d01kIaVcQ/export?format=csv"
@@ -404,9 +398,9 @@ def annotate(df_data,df_annot,polarity,tolerance):
         df_annot['mz'] = df_annot[masscol]-mass_proton
     df_data['annotation'] = ''
     for mz,row in df_data.iterrows():
-        df_annot_mz = df_annot[df_annot[masscol].between(mz-mztol,mz+mztol)]
+        df_annot_mz = df_annot[df_annot['mz'].between(mz-tolerance,mz+tolerance)]
         if df_annot_mz.shape[0]>0:
-            annots = '|'.join(df_annot_mz.name)
+            annots = '|'.join(df_annot_mz.name.astype(str))
             df_data.loc[mz,'annotation'] = annots
     return df_data
             

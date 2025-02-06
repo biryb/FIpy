@@ -17,14 +17,9 @@ from utils import *
 from . import utils
 
 def main():
-    # Set up argument parser
-    print("am i editing")
     parser = argparse.ArgumentParser(description='Process mzML files and perform analysis')
     parser.add_argument('dir_mzml', help='Directory containing mzML files')
-    # Parse the arguments
     args = parser.parse_args()
-
-    # Now you can use args.dir_mzml and args.dir_analysis directly
     init_start_time = time.time()
     os.chdir(args.dir_mzml)
     list_mzml_files = os.listdir(args.dir_mzml)
@@ -56,12 +51,19 @@ def main():
     # Gap filling
     print('Gapfilling based on consensus m/z')
     start_time = time.time()
-    df_gapfilled = map_mz_to_consensus(list_mzml_files,df_merged,tolerance=0.005)
+    #df_gapfilled = map_mz_to_consensus(list_mzml_files,df_merged,tolerance=0.005)
+    df_gapfilled = process_mzml_files_with_consensus_mzs(list_mzml_files,df_merged,tolerance=0.005)
     elapsed_time = time.time() - start_time
     print(f"Gapfilling took {elapsed_time/60:.4f} minutes to run.")
 
-    print('Filtering out ions present in less than 50% of the samples')
-    df_filtered = filter_rare_ions(df_merged)
+    var_threshold = 0.2
+    print(f'Filtering out ions that vary more than {var_threshold*100}% between replicates')
+    df_filtered_ions = filter_high_variation_ions(df_gapfilled,threshold=var_threshold)
+    print(f'Went from {df_gapfilled.shape[0]} to {df_filtered_ions.shape[0]} ions')
+    prevalence_threshold = 0.5
+    print(f'Filtering out ions present in less than {prevalence_threshold*100}% of the samples')
+    df_filtered = filter_rare_ions(df_filtered_ions,threshold=prevalence_threshold)
+    print(f'Went from {df_filtered_ions.shape[0]} to {df_filtered.shape[0]} ions')
     
     output_dir = os.path.join(dir_analysis, "fipy_output")
     # Create the folder if it doesn't exist
@@ -70,12 +72,10 @@ def main():
         order_number = 1
     except OSError as error:  
         print("Folder exist, appending to existing folder")
-        order_number = len(os.listdir(output_dir))+1
+        order_number = len(os.listdir(output_dir))
     print(f"Saving filtered raw data to {output_dir}")
     df_filtered.to_excel(os.path.join(output_dir, f"raw_output_{order_number}.xlsx"))
-
-
-    df_annot = load_annotation_data()
+    df_annot = load_annotation_file()
     df_annotated_data = annotate(df_filtered,df_annot,polarity,tolerance=0.005)
     df_annotated_data.to_excel(os.path.join(output_dir, f"raw_annotated_output_{order_number}.xlsx"))
     
