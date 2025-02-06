@@ -358,13 +358,20 @@ def map_mz_to_consensus(mzml_files, df_merged, tolerance=0.005):
     # Loop through each mzML file
     for file in mzml_files:
         # Open the mzML file
+        mzml_obj = mzml.MzML(file)
+        apex = find_apex_scan(mzml_obj)
+        start=apex
+        end = min(len(spectra), apex_scan + 6)
         reader = mzml.MzML(file)
         
         # Initialize a list to store summed intensities for this file
         summed_intensities = np.zeros(len(consensus_mz))
-        
-        # Loop through each spectrum in the mzML file
-        for spectrum in reader:
+    
+        data = []
+
+        # Loop through each spectrum in the predetermined apex of the injection peak in the mzML file
+        for i in range(start, end):
+            spectrum = spectra[i]
             mz = spectrum['m/z array']
             intensity = spectrum['intensity array']
             

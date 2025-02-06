@@ -9,12 +9,16 @@ Created on Tue Feb  4 14:17:52 2025
 import os
 import time
 import argparse  # Import argparse for argument parsing
-from utils import *
 from pathlib import Path
 import pandas as pd
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from utils import *
+from . import utils
 
 def main():
     # Set up argument parser
+    print("am i editing")
     parser = argparse.ArgumentParser(description='Process mzML files and perform analysis')
     parser.add_argument('dir_mzml', help='Directory containing mzML files')
     # Parse the arguments
