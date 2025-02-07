@@ -52,5 +52,4 @@ fipy <dir_mzml>
 FIpy creates a subfolder called "fipy_output" in dir_mzml and saves results in that path as an Excel file.
 
 # Contact
-Reach out to birgittaryback@gmail.com with questions and comments
-
+This is an actively managed project. Reach out to birgittaryback@gmail.com with questions and comments - especially if fipy did not work on your system.
