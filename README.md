@@ -5,7 +5,7 @@ FIpy is a command line tool for a processing and merging workflow for `mzML` fil
 
 1. It reads in the files and determines the highest intensity scans<br>
 2. Within each file, it flattens the time dimension by merging m/z values from consecutive scans and summing up corresponding intensities<br>
-3. Taking the file-consensus m/z array mapping, it looks for consensus m/z values between files <br>
+3. Taking the {file : consensus m/z array} mapping, it looks for consensus m/z values between files <br>
 4. It queries the .mzML files for the consensus m/z's and builds a pandas dataframe with the corresponding intensities<br>
 4. The resulting consensus matrix is filtered three ways:
      - Ions that vary more than 20% between technical replicates in more than 50% of the samples
