@@ -43,8 +43,25 @@ pip install .
 # Usage
 
 Command-Line Interface (CLI)<br>
+It's recommended to use a virtual environment to run fipy.<br>
+Open a terminal (Mac) or command line/powershell (Windows) and run the following commands:<br>
 
-Open your terminal or command line and run:
+```bash
+conda create --name fipy python=3.10
+conda activate fipy
+
+In Mac terminal, the prompt should appear as
+```bash
+(fipy) id@macname FIpy %                                                                         
+```
+
+Then run
+```bash
+pip install git+https://github.com/biryb/FIpy.git
+```
+to install fipy.<br>
+
+That's it - you're ready to process samples. The basic usage is like this:
 
 ```bash
 fipy <dir_mzml>
