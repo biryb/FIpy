@@ -5,12 +5,13 @@ FIpy is a package for a processing and merging workflow for `mzML` files and can
 
 1. It reads in the files and determines the highest intensity scans<br>
 2. Within each file, it flattens the time dimension by merging m/z values from consecutive scans and summing up corresponding intensities<br>
-3. It merges all the data into one large dataframe<br>
-4. It merges m/z values in the dataframe based on similarity (rows with m/z 143.1221 and m/z 143.1220 would be combined)<br>
-5. It filters out ions that vary more than 20% between technical replicates
-6. It filters out ions that were present in less than 50% of the files
-7. It annotates the ions based on accurate mass
-8. It writes the resulting dataframe into .xlsx file
+3. Taking the file-consensus m/z array mapping, it looks for consensus m/z values between files <br>
+4. It applies three filters:
+     - Ions that vary more than 20% between technical replicates in more than 50% of the samples
+     - Ions that had 0 abundance in one technical replicate and above in the other
+     - Ions that were present in less than 50% of the files
+5. It annotates the ions based on accurate mass
+6. It writes the resulting dataframe into .xlsx file
 
 # Data requirements
 FIpy uses flow injection-MS1 data. It was developed for 1 minute injections as in Fuhrer et al 2011 (https://pubs-acs-org.ezp-prod1.hul.harvard.edu/doi/10.1021/ac201267k), but could theoretically use any flow injection data. While developed for TOF's, there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.<br>
