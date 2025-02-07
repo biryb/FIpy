@@ -48,7 +48,7 @@ def main():
     df_filtered_ions = filter_high_variation_ions(df_gapfilled,threshold=var_threshold)
     df_filtered_ions = filter_mismatched_replicates(df_filtered_ions)
     print(f'Went from {df_gapfilled.shape[0]} to {df_filtered_ions.shape[0]} ions')
-    prevalence_threshold = 1
+    prevalence_threshold = 0.1
     print(f'Filtering out ions present in less than {prevalence_threshold*100}% of the samples')
     df_filtered = filter_rare_ions(df_filtered_ions,threshold=prevalence_threshold)
     print(f'Went from {df_filtered_ions.shape[0]} to {df_filtered.shape[0]} ions')

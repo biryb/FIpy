@@ -416,7 +416,6 @@ def process_mzml_files_with_consensus_mzs(list_mzml_files, list_mzs, tolerance, 
         print("No valid mzML data processed.")
         return pd.DataFrame()
     
-    print(f'Gapfilling')
     # Create a MultiIndex for the DataFrame (index = target m/z, columns = file paths)
     first_key = next(iter(dict_all_rawdata))
     gapfill_index = dict_all_rawdata[first_key].keys()
@@ -447,11 +446,7 @@ def filter_high_variation_ions(df, threshold=0.20):
         replicate_columns[sample_name].append(col)
     
     # Store rows to drop
-    rows_to_drop = set()
-    
-    # Store columns to drop
-    columns_to_drop = set()
-    
+    df_rowcounter = pd.DataFrame(0, index=df.index,columns=['Counter'])
     # Process each sample's replicates
     for sample_name, columns in replicate_columns.items():
         if len(columns) > 1:  # Only process if there are multiple replicates
@@ -465,22 +460,14 @@ def filter_high_variation_ions(df, threshold=0.20):
                     
                     # Replace NaNs with 0 (if all values were zero)
                     diff_percentage = diff_percentage.fillna(0)
+                    diff_percentage = diff_percentage[diff_percentage<threshold]
+                    df_rowcounter.loc[diff_percentage.index,'Counter'] +=1
                     
-                    # Identify rows exceeding the threshold
-                    rows_to_drop.update(diff_percentage[diff_percentage > threshold].index)
-                    
-                    # Check if one replicate is < 0 and the other is > 10
-                    condition = (df[col_a] < 0) & (df[col_b] > 10) | (df[col_a] > 10) & (df[col_b] < 0)
-                    if condition.any():
-                        columns_to_drop.add(col_a)
-                        columns_to_drop.add(col_b)
-    
+    n_samples = df.shape[0]
+    df_rowcounter_sel = df_rowcounter[df_rowcounter.Counter>0.5*n_samples]
     # Drop identified rows
-    df_filtered = df.drop(index=rows_to_drop, errors='ignore')
-    
-    # Drop identified columns
-    df_filtered = df_filtered.drop(columns=columns_to_drop, errors='ignore')
-    
+    df_filtered = df.drop(index=df_rowcounter_sel.index, errors='ignore')
+        
     return df_filtered
 
 def filter_mismatched_replicates(df):
