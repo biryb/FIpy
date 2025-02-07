@@ -12,8 +12,7 @@ from pyteomics import mzml
 import time
 import requests
 import csv
-from sklearn.cluster import DBSCAN
-
+import os
 
 def infer_polarity(list_mzml_files):
     
@@ -309,19 +308,18 @@ def filter_rare_ions(df, threshold=0.5):
     return df_filtered
 
 
-def get_matching_mzs(list_mzs, tolerance, polarity):
+def get_matching_mzs(list_mzs, polarity):
     """
-    Function to get m/z values from a publicly accessible Google Sheet based on the specified polarity.
-    
+    Function to get the nearest m/z values from a publicly accessible Google Sheet based on the specified polarity.
+
     :param list_mzs: List of m/z values to check.
     :param polarity: 'positive' or 'negative' to select the appropriate m/z column.
-    :param sheet_url: URL of the Google Sheets document (in CSV format).
-    :return: List of matching m/z values from the Google Sheets.
+    :return: DataFrame of matched m/z values and the average error.
     """
     # Load the Google Sheets data as a pandas DataFrame
     sheet_url = 'https://docs.google.com/spreadsheets/d/19FO85OiCjMch5Wy2OdVWB4hSUq15jaH2I1wTVdwN_So/export?format=csv'
     df = pd.read_csv(sheet_url)
-    
+    print("new function!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     # Check for the correct polarity and select the appropriate column
     if polarity == 'negative':
         mz_column = 'mz_neg'  # Use 'mz_neg' column for negative polarity
@@ -330,18 +328,21 @@ def get_matching_mzs(list_mzs, tolerance, polarity):
     else:
         raise ValueError("Polarity must be either 'positive' or 'negative'.")
     
-    # Find matching m/z values in the list
-    df_matched_data = pd.DataFrame()
-    for mz in list_mzs:
-        df_match = df[df[mz_column].between(mz-tolerance,mz+tolerance)]
-        if df_match.shape[0]>0:
-            df_match['mz_observed'] = mz
-            df_matched_data = pd.concat([df_matched_data,df_match])
+    matched_data = []
+    mz_values = df[mz_column].values  # Convert to numpy array for faster processing
 
-    df_matched_data['delta_mz'] = df_matched_data[mz_column]-df_matched_data.mz_observed
-    average_error = abs(df_matched_data['delta_mz'].mean())
-    return df_matched_data,average_error
+    for mz in mz_values:
+        # Find the index of the closest value in the reference m/z column
+        closest_idx = np.abs(list_mzs - mz).argmin()
+        df_closest_mz = df[df[mz_column]==mz]
+        print(df_closest_mz.head(10))
+        df_closest_mz['mz_obs'] = list_mzs[closest_idx]
+        matched_data.append(df_closest_mz)
+    df_matched_data = pd.concat(matched_data)
+    df_matched_data['delta_mz'] = df_matched_data[mz_column] - df_matched_data['mz_obs']
+    average_error = abs(df_matched_data['delta_mz']).mean()
 
+    return df_matched_data, average_error
 def process_mzml_files_with_consensus_mzs(list_mzml_files, list_mzs, tolerance, apex_offset=8):
     """
     Process a list of mzML files to generate a gap-filled DataFrame of intensity values 

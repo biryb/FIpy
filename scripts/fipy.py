@@ -33,7 +33,7 @@ def main():
     print('Merging m/z between files')
     list_mzs = find_consensus_spectra_between_files(dict_all_rawdata,tolerance=0.005)
     print(f'Found {len(list_mzs)} mzs')
-    df_matched_data,average_error = get_matching_mzs(list_mzs,tolerance,polarity)
+    df_matched_data,average_error = get_matching_mzs(list_mzs,polarity)
     print(df_matched_data)
     annot_tolerance = tolerance#max(average_error,0.001)
     print(f"Average deviation between expected and observed mz was {average_error}")
@@ -61,14 +61,14 @@ def main():
         print("Folder exist, appending to existing folder")
         order_number = len(os.listdir(output_dir))
     print(f"Saving filtered raw data to {output_dir}")
-    df_filtered.to_excel(os.path.join(output_dir, f"raw_output_{order_number}.xlsx"))
+    df_filtered.to_csv(os.path.join(output_dir, f"raw_output_{order_number}.csv"))
     with open(os.path.join(output_dir,"within_file_mz_mapping.json"), "w") as file:
         json.dump(dict_old2newmz, file, indent=4)  # `indent=4` makes it readable
 
 
     df_annot = load_annotation_file()
     df_annotated_data = annotate(df_filtered,df_annot,polarity,annot_tolerance)
-    df_annotated_data.to_excel(os.path.join(output_dir, f"raw_annotated_output_{order_number}.xlsx"))
+    df_annotated_data.to_csv(os.path.join(output_dir, f"raw_annotated_output_{order_number}.csv"))
     
     print(f"Saving annotated data in: {output_dir}")        
     elapsed_time = time.time() - init_start_time
