@@ -1,5 +1,5 @@
 # FIpy
-FIpy is a package for a processing and merging workflow for `mzML` files and can be used for untargeted mass spectrometry analysis of metabolites, lipids, and peptides.
+FIpy is a command line tool for a processing and merging workflow for `mzML` files and can be used for untargeted mass spectrometry analysis of metabolites, lipids, and peptides.
 
 # What does FIpy do to my data?
 
@@ -42,7 +42,6 @@ pip install .
 
 # Usage
 
-Command-Line Interface (CLI)<br>
 It's recommended to use a virtual environment to run fipy.<br>
 If using Conda, open a terminal (Mac) or command line/powershell (Windows) and run the following commands:<br>
 
