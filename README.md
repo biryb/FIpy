@@ -1,7 +1,7 @@
-# FIpy
-FIpy is a command line tool for a processing and merging workflow for `mzML` files and can be used for untargeted mass spectrometry analysis of metabolites, lipids, and peptides.
+# DIpy
+DIpy is a command line tool for a processing and merging workflow for `mzML` files and can be used for untargeted mass spectrometry analysis of metabolites, lipids, and peptides.
 
-# What does FIpy do to my data?
+# What does DIpy do to my data?
 
 1. It reads in the files and determines the highest intensity scans<br>
 2. Within each file, it flattens the time dimension by merging m/z values from consecutive scans and summing up corresponding intensities<br>
@@ -15,23 +15,23 @@ FIpy is a command line tool for a processing and merging workflow for `mzML` fil
 6. It writes the resulting dataframe into .xlsx file
 
 # Data requirements
-FIpy uses flow injection-MS1 data. It was developed for 1 minute injections as in Fuhrer et al 2011 (https://pubs-acs-org.ezp-prod1.hul.harvard.edu/doi/10.1021/ac201267k), but could theoretically use any flow injection data. While developed for TOF's, there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.<br>
+DIpy uses flow injection-MS1 data. It was developed for TOF's, but there's no explicit parameters to exclude using it on Orbitrap data - however, it requires a high-resolution detector to produce meaningful outputs.<br>
 
-If technical injection replicates are used (which is recommended), they should be named as uniquesampleidentifier__replicateID.mzML. FIpy uses this information to filter out ions that are very dissimilar between the technical replicates. It recognizes replicates from "__" specifically. <br>
+If technical injection replicates are used (which is recommended), they should be named as uniquesampleidentifier__replicateID.mzML. DIpy uses this information to filter out ions that are very dissimilar between the technical replicates. It recognizes replicates from "__" specifically. <br>
 
-The input is a folder with .mzML files. Prior to running FIpy, convert your raw files to .mzML with the following settings
+The input is a folder with .mzML files. Prior to running DIpy, convert your raw files to .mzML with the following settings
 
 <img width="500" alt="image" src="https://github.com/user-attachments/assets/c90588ae-3b81-454f-8f84-51a3dd1add27" />
 
 # Installation
 
-You can install **FIpy** using `pip` either from GitHub or from a local directory.
+You can install **DIpy** using `pip` either from GitHub or from a local directory.
 
 ## Install from GitHub
 
 To install the package directly from GitHub, run the following command:
 ```bash
-pip install git+https://github.com/biryb/FIpy.git
+pip install git+https://github.com/biryb/DIpy.git
 ```
 
 ## Install from a Local Directory
@@ -43,32 +43,32 @@ pip install .
 
 # Usage
 
-It's recommended to use a virtual environment to run FIpy.<br>
+It's recommended to use a virtual environment to run DIpy.<br>
 If using Conda, open a terminal (Mac) or command line/powershell (Windows) and run the following commands:<br>
 
 ```bash
-conda create --name fipy python=3.10
-conda activate fipy
+conda create --name DIpy python=3.10
+conda activate DIpy
 ```
 
 In Mac terminal, the prompt should appear as
 ```bash
-(fipy) id@macname FIpy %                                                                         
+(DIpy) id@macname DIpy %                                                                         
 ```
 
 Then run
 ```bash
-pip install git+https://github.com/biryb/FIpy.git
+pip install git+https://github.com/biryb/DIpy.git
 ```
-to install fipy.<br>
+to install DIpy.<br>
 
 That's it - you're ready to process samples. The basic usage is like this:
 
 ```bash
-fipy <dir_mzml>
+DIpy <dir_mzml>
 ```
 
-FIpy creates a subfolder called "fipy_output" in dir_mzml and saves results in that path as an Excel file.
+DIpy creates a subfolder called "DIpy_output" in dir_mzml and saves results in that path as an Excel file.
 
 # Contact
-This is an actively managed project. Reach out to birgittaryback@gmail.com with questions and comments - especially if fipy did not work on your system.
+This is an actively managed project. Reach out to birgittaryback@gmail.com with questions and comments - especially if DIpy did not work on your system.
